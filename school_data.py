@@ -1,18 +1,16 @@
 # school_data.py
-# AUTHOR NAME
+# AUTHOR NAME: Andy Allard
 #
 # A terminal-based application for computing and printing statistics based on given input.
 # You must include the main listed below. You may add your own additional classes, functions, variables, etc. 
 # You may import any modules from the standard Python library.
 # Remember to include docstrings and comments.
 
-
 import numpy as np
 import pandas as pd
 from given_data import year_2013, year_2014, year_2015, year_2016, year_2017, year_2018, year_2019, year_2020, year_2021, year_2022
 
 # Declare any global variables needed to store the data here
-
 
 # You may add your own additional classes, functions, variables, etc.
 
@@ -42,31 +40,21 @@ def prepare_data():
     school_codes = list(df['School Code'].unique())
     schools = dict(zip(school_codes, school_names))
 
-    all_years = [year_2013,
-                 year_2014,
-                 year_2015,
-                 year_2016,
-                 year_2017,
-                 year_2018,
-                 year_2019,
-                 year_2020,
-                 year_2021,
-                 year_2022]
+    all_years = [year_2013, year_2014, year_2015, year_2016, year_2017,
+                 year_2018, year_2019, year_2020, year_2021, year_2022]
 
     # reshape data into a 3D np.array named data
     all_years_reshaped = [np.array(year).reshape(20, 3) for year in all_years]
-    data = np.array(all_years_reshaped, dtype=int)
+    data = np.array(all_years_reshaped)
 
-    # Create 3 dicts to store the labels of the data in the 3D array
-    # each dict will have the user friendly version of the data as the key
-    # and the index as the value. This will allow an easier way to access the data
-    # which should make the code much more readable
+    # Create 3 dicts to store the labels of the data in the 3D array. Each dict will have the 
+    # user friendly version of the data as the key and the index as the value. This will allow
+    # an easier way to access the data which should make the code much more readable.
+    #
     # Ex. Grade 11 data is stored in the 3D array, 3rd dimension, index 1
     #     So the grade_labels dict can easily find the index 1 of grade 11 data
     #     with grade_labels[11] (which will return 1)
 
-    # first we 
-    # year_labels = [year for year in range(2013, 2023)]
     year_labels = dict(zip(range(2013, 2023), range(10)))
     grade_labels = {10: 0, 11: 1, 12: 2}
     school_labels = dict(zip(school_codes, range(20)))
@@ -84,7 +72,6 @@ def main():
     # data[:, school_labels[school], grade_labels[grade])
 
 
-
     print("ENSF 692 School Enrollment Statistics")
 
     # Print Stage 1 requirements here
@@ -94,7 +81,6 @@ def main():
 
     # Prompt for user input
 
-    # print(data)
     print(schools.items())
 
     while True:
@@ -128,19 +114,36 @@ def main():
  
     # Prints mean enrollment for grades 10, 11, and 12
     for grade, grade_index in grade_labels.items():
-        mean_enrollment = int(np.mean(data[:, school_labels[school_code], grade_index]))
+        mean_enrollment = int(np.nanmean(data[:, school_labels[school_code], grade_index]))
         print(f'Mean enrollment for Grade {grade}: {mean_enrollment}')
 
-    max_enrollment = int(np.max(data[:, school_labels[school_code], :]))
+    # Prints max and min enrollment for a single grade
+    max_enrollment = int(np.nanmax(data[:, school_labels[school_code], :]))
     print(f'Highest enrollment for a single grade: {max_enrollment}')
-    min_enrollment = int(np.min(data[:, school_labels[school_code], :]))
+    min_enrollment = int(np.nanmin(data[:, school_labels[school_code], :]))
     print(f'Lowest enrollment for a single grade: {min_enrollment}')
-                         
 
-    # print(data[:, school_labels[school_code], :])
+    # Prints total enrollment for all grades for each year
+    for year, year_index in year_labels.items():
+        total_enrollment = int(np.nansum(data[year_index, school_labels[school_code], :]))
+        print(f'Total enrollment for {year}: {total_enrollment}')                       
+
+    total_ten_year_enrollment = np.nansum(data[:, school_labels[school_code], :])
+    print(f'Total ten year enrollment: {total_ten_year_enrollment}')
+
+    # FIX THIS
+    mean_ten_year_enrollment = np.nanmean(data[:, school_labels[school_code], :])
+    print(f'FIX ME!!!! Mean total enrollment over ten years: {mean_ten_year_enrollment}')
 
     # Print Stage 3 requirements here
     print("\n***General Statistics for All Schools***\n")
+
+    mean_enrollment = int(np.mean(data[year_labels[2013], :, :]))
+    print(f'Mean enrollment in 2013: {mean_enrollment}')
+    mean_enrollment = int(np.nanmean(data[year_labels[2022], :, :]))
+    print(f'Mean enrollment in 2022: {mean_enrollment}')
+
+    
 
 
 if __name__ == '__main__':
