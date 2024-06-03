@@ -8,6 +8,10 @@
 * Manipulate NumPy arrays
 * Determine and execute NumPy array computations
 
+## Sample output
+
+![sample output](sample_output.png)
+
 ## 💻 Program Specifications
 The City of Calgary publishes data on various demographics, include school enrollment. You are being asked to design a terminal-based application for computing and printing statistics based on given input.
 Your application must meet the following design specifications:
