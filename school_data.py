@@ -61,6 +61,17 @@ def prepare_data():
 
     return data, schools, year_labels, grade_labels, school_labels
 
+
+def print_school_list(schools):
+    max_school_name_length = max([len(name) for name in schools.values()])
+
+    print('School Code'.center(15) + '|' + 'School Name'.center(max_school_name_length + 6))
+    print('-' * (16 + max_school_name_length + 6))
+    for key, value in schools.items():
+        print(str(key).center(15) + '|' + value.center(max_school_name_length + 6))
+    print()
+
+
 def main():
     # Format to access items in the 3D array is 
     # data[year_index, school_index, grade_index]
@@ -72,25 +83,23 @@ def main():
     # data[:, school_labels[school], grade_labels[grade])
 
 
-    print("ENSF 692 School Enrollment Statistics")
+    print("ENSF 692 School Enrollment Statistics\n")
 
     # Print Stage 1 requirements here
     data, schools, year_labels, grade_labels, school_labels = prepare_data()
+    print_school_list(schools)
     print(f'Shape of full data array:  {data.shape}')
     print(f'Dimensions of full data array:  {data.ndim}')
 
     # Prompt for user input
-
-    print(schools.items())
-
     while True:
         try: 
             # input_high_school = input("Please enter the high school name or"
                                     # " school code: ").strip()
             # FIX ME LATER!!
+
             input_high_school = 9857
             if int(input_high_school) in schools.keys():
-                print("school found")
                 school_name = schools[int(input_high_school)]
                 school_code = int(input_high_school)
                 break
@@ -104,10 +113,9 @@ def main():
             else:
                 raise ValueError
         except ValueError:
-            print('You must enter a valid school name or code.')
-    
-    # print(input_high_school)
+            print('You must enter a valid school name or code.\n')
 
+    
     # Print Stage 2 requirements here
     print("\n***Requested School Statistics***\n")
     print(f"School Name: {school_name}, School Code: {school_code}")
@@ -129,11 +137,16 @@ def main():
         print(f'Total enrollment for {year}: {total_enrollment}')                       
 
     total_ten_year_enrollment = np.nansum(data[:, school_labels[school_code], :])
-    print(f'Total ten year enrollment: {total_ten_year_enrollment}')
-
-    # FIX THIS
-    mean_ten_year_enrollment = np.nanmean(data[:, school_labels[school_code], :])
-    print(f'FIX ME!!!! Mean total enrollment over ten years: {mean_ten_year_enrollment}')
+    print(f'Total ten year enrollment: {int(total_ten_year_enrollment)}')
+    print(f'Mean total enrollment over ten years: {int(total_ten_year_enrollment / 10)}')
+    
+    this_school = data[:, school_labels[school_code], :]
+    # Masking operation
+    enrollment_over_500 = this_school[this_school > 500]
+    if len(enrollment_over_500) == 0:
+        print("No enrollments over 500.")
+    else:
+        print(f'For all enrollments over 500, the median value was: {int(np.median(enrollment_over_500))}')
 
     # Print Stage 3 requirements here
     print("\n***General Statistics for All Schools***\n")
@@ -142,8 +155,11 @@ def main():
     print(f'Mean enrollment in 2013: {mean_enrollment}')
     mean_enrollment = int(np.nanmean(data[year_labels[2022], :, :]))
     print(f'Mean enrollment in 2022: {mean_enrollment}')
+    total_2022 = int(np.nansum(data[year_labels[2022], :, grade_labels[12]]))
+    print(f'Total graduating class of 2022: {total_2022}')
+    print(f'Highest enrollment for a single grade: {int(np.nanmax(data))}')
+    print(f'Lowest enrollment for a single grade: {int(np.nanmin(data))}')
 
-    
 
 
 if __name__ == '__main__':
